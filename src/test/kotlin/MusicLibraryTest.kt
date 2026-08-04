@@ -18,7 +18,7 @@ class MusicLibraryTest {
         val library = MusicLibrary()
         val beethoven = Composer("Beethoven", 1770, 1827, "German")
         val piece = Piece(
-            id = "Op 106",
+            id = "Op. 106",
             title = "Piano Sonata no. 29",
             composer = beethoven,
             instrumentation = "Piano"

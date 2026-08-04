@@ -33,4 +33,10 @@ class MusicLibrary {
 
     fun findItemsForPiece(pieceId: String): List<PhysicalItem> =
         items.values.filter { pieceId in it.pieceIds }
+
+    fun findPiecesByInstrumentation(instrumentation: String): List<Piece> =
+        pieces.values.filter { it.instrumentation == instrumentation }
+
+    fun findPiecesByTitle(titleFragment: String): List<Piece> =
+        pieces.values.filter { it.title.contains(titleFragment, ignoreCase = true) }
 }

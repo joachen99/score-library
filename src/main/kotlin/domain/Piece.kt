@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Piece(
-    val id: Int,
+    val id: String,
     val title: String,
     val composer: Composer,
     val opus: Int? = null,

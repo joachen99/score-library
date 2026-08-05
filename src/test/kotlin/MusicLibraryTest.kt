@@ -1,4 +1,5 @@
 import domain.Composer
+import domain.PhysicalItem
 import domain.Piece
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -65,4 +66,85 @@ class MusicLibraryTest {
         assertEquals(1, sonatas.size)
         assertEquals("Op. 2", sonatas.first().id)
     }
+
+    @Test
+    fun removeComposerAlsoRemovesPiecesAndItems() {
+        val library = MusicLibrary()
+        val beethoven = Composer("Beethoven", 1770, 1827, "German")
+
+        val piece1 = Piece("Op. 2", "Piano Sonata no. 1", beethoven, "Piano")
+        val piece2 = Piece("Op. 3", "String Trio", beethoven, "Strings")
+
+        val item1 = PhysicalItem("ITEM-1", pieceId = "Op. 2", format = "book")
+        val item2 = PhysicalItem("ITEM-2", pieceId = "Op. 3", format = "book")
+
+        library.addComposer(beethoven)
+        library.addPiece(piece1)
+        library.addPiece(piece2)
+        library.addPhysicalItem(item1)
+        library.addPhysicalItem(item2)
+
+        val removed = library.removeComposer("Beethoven")
+        assertEquals(true, removed)
+
+        // Komponisten borte
+        assertEquals(0, library.composers.size)
+
+        // Alle stykker av Beethoven borte
+        assertEquals(0, library.pieces.size)
+
+        // Alle items for disse stykkene borte
+        assertEquals(0, library.items.size)
+    }
+
+    @Test
+    fun removePieceAlsoRemovesItemsButKeepsComposer() {
+        val library = MusicLibrary()
+        val beethoven = Composer("Beethoven", 1770, 1827, "German")
+
+        val piece = Piece("Op. 2", "Piano Sonata no. 1", beethoven, "Piano")
+        val item1 = PhysicalItem("ITEM-1", pieceId = "Op. 2", format = "book")
+        val item2 = PhysicalItem("ITEM-2", pieceId = "Op. 2", format = "book")
+
+        library.addComposer(beethoven)
+        library.addPiece(piece)
+        library.addPhysicalItem(item1)
+        library.addPhysicalItem(item2)
+
+        val removed = library.removePiece("Op. 2")
+        assertEquals(true, removed)
+
+        // Komponisten skal fortsatt finnes
+        assertEquals(1, library.composers.size)
+        assertEquals("Beethoven", library.composers["Beethoven"]?.name)
+
+        // Stykket er fjernet
+        assertEquals(0, library.pieces.size)
+
+        // Alle items for dette stykket er fjernet
+        assertEquals(0, library.items.size)
+    }
+
+    @Test
+    fun removeItemOnlyRemovesTheItem() {
+        val library = MusicLibrary()
+        val beethoven = Composer("Beethoven", 1770, 1827, "German")
+        val piece = Piece("Op. 2", "Piano Sonata no. 1", beethoven, "Piano")
+        val item = PhysicalItem("ITEM-1", pieceId = "Op. 2", format = "book")
+
+        library.addComposer(beethoven)
+        library.addPiece(piece)
+        library.addPhysicalItem(item)
+
+        val removed = library.removeItem("ITEM-1")
+        assertEquals(true, removed)
+
+        // Item borte
+        assertEquals(0, library.items.size)
+
+        // Stykket og komponisten eksisterer fortsatt
+        assertEquals(1, library.pieces.size)
+        assertEquals(1, library.composers.size)
+    }
+
 }

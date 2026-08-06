@@ -4,8 +4,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class PhysicalItem (
-    val id: String,
-    val pieceId: String,
-    val edition: Edition? = null,
-    val format: String //Format meaning book, loose paper etc.
+    var id: Int,
+    val pieceId: Int,
+    val edition: String? = null,
+    val format: String? //Format meaning book, loose paper etc.
 )

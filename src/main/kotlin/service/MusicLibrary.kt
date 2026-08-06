@@ -6,8 +6,11 @@ import domain.Piece
 
 class MusicLibrary {
     var composers = mutableMapOf<String, Composer>()
-    var pieces = mutableMapOf<String, Piece>()
-    var items = mutableMapOf<String, PhysicalItem>()
+    var pieces = mutableMapOf<Int, Piece>()
+    var items = mutableMapOf<Int, PhysicalItem>()
+
+    private var nextPieceId = 0
+    private var nextItemId = 0
 
     //Register
     fun addComposer(composer: Composer) {
@@ -15,11 +18,13 @@ class MusicLibrary {
     }
 
     fun addPiece(piece: Piece) {
-        pieces[piece.id] = piece
+        piece.pieceId = nextPieceId++
+        pieces[piece.pieceId] = piece
         addComposer(piece.composer)
     }
 
     fun addPhysicalItem(item: PhysicalItem) {
+        item.id = nextItemId++
         items[item.id] = item
     }
 
@@ -32,47 +37,50 @@ class MusicLibrary {
     fun findPiecesByComposer(name: String): List<Piece> =
         pieces.values.filter { it.composer.name.contains(name, ignoreCase = true) }
 
-    fun findItemsForPiece(pieceId: String): List<PhysicalItem> =
-        items.values.filter { pieceId in it.pieceId }
+    fun findItemsForPiece(pieceId: Int): List<PhysicalItem> =
+        items.values.filter { pieceId == it.pieceId }
 
     fun findPiecesByInstrumentation(instrumentation: String): List<Piece> =
         pieces.values.filter { it.instrumentation == instrumentation }
 
-    fun findPiecesByTitle(titleFragment: String): List<Piece> =
-        pieces.values.filter { it.title.contains(titleFragment, ignoreCase = true) }
+    fun findPiecesByTitle(title: String): List<Piece> =
+        pieces.values.filter { it.title.contains(title, ignoreCase = true) }
 
     // removing
     fun removeComposer(name: String): Boolean {
         val composer = composers[name] ?: return false
 
-        // need to remove existing pieces for the composer as well
+        // we need to remove existing pieces for the composer
         val piecesToRemove = pieces.values.filter { it.composer.name == name }
 
         for (piece in piecesToRemove) {
+
+            // we need to remove existing items for the piece
             val itemIdsToRemove = items.values
-                .filter { it.pieceId == piece.id }
+                .filter { it.pieceId ==  piece.pieceId }
                 .map { it.id }
             itemIdsToRemove.forEach { items.remove(it) }
-            pieces.remove(piece.id)
+            pieces.remove(piece.pieceId)
         }
         composers.remove(name)
         return true
     }
 
-    fun removePiece(id: String): Boolean {
-        val piece = pieces[id] ?: return false
+    fun removePiece(pieceId: Int): Boolean {
+        val piece = pieces[pieceId] ?: return false
 
-        // need to remove existing items for the piece as well
         val itemIdsToRemove = items.values
-            .filter { it.pieceId == id }
+            .filter { it.pieceId == pieceId }
             .map { it.id }
+
         itemIdsToRemove.forEach { items.remove(it) }
-        pieces.remove(id)
+
+        pieces.remove(pieceId)
         return true
     }
 
-    fun removeItem(id: String): Boolean {
+
+    fun removeItem(id: Int): Boolean {
         return items.remove(id) != null
     }
-
 }

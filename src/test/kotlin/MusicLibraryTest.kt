@@ -22,7 +22,8 @@ class MusicLibraryTest {
         val library = MusicLibrary()
         val beethoven = Composer("Beethoven", 1770, 1827, "German")
         val piece = Piece(
-            id = "Op. 106",
+            pieceId = 0,
+            catalogueId = "Op. 106",
             title = "Piano Sonata no. 29",
             composer = beethoven,
             instrumentation = "Piano"
@@ -32,7 +33,7 @@ class MusicLibraryTest {
 
         val result = library.findPiecesByComposer("Beethoven")
         assertEquals(1, result.size)
-        assertEquals("Op. 106", result.first().id)
+        assertEquals(0, result.first().pieceId)
     }
 
     @Test
@@ -40,15 +41,15 @@ class MusicLibraryTest {
         val library = MusicLibrary()
         val beethoven = Composer("Beethoven", 1770, 1827, "German")
 
-        val piece1 = Piece("Op. 2", "Piano Sonata no. 1", beethoven, "Piano")
-        val piece2 = Piece("Op. 3", "String Trio", beethoven, "Strings")
+        val piece1 = Piece(0, "Op. 2", "Piano Sonata no. 1", beethoven, "Piano")
+        val piece2 = Piece(1, "Op. 3", "String Trio", beethoven, "Strings")
 
         library.addPiece(piece1)
         library.addPiece(piece2)
 
         val pianoPieces = library.findPiecesByInstrumentation("Piano")
         assertEquals(1, pianoPieces.size)
-        assertEquals("Op. 2", pianoPieces.first().id)
+        assertEquals(0, pianoPieces.first().pieceId)
     }
 
     @Test
@@ -56,15 +57,15 @@ class MusicLibraryTest {
         val library = MusicLibrary()
         val beethoven = Composer("Beethoven", 1770, 1827, "German")
 
-        val piece1 = Piece("Op. 2", "Piano Sonata no. 1", beethoven, "Piano")
-        val piece2 = Piece("Op. 10", "String Quartet", beethoven, "Strings")
+        val piece1 = Piece(0, "Op. 2", "Piano Sonata no. 1", beethoven, "Piano")
+        val piece2 = Piece(1, "Op. 10", "String Quartet", beethoven, "Strings")
 
         library.addPiece(piece1)
         library.addPiece(piece2)
 
         val sonatas = library.findPiecesByTitle("Sonata")
         assertEquals(1, sonatas.size)
-        assertEquals("Op. 2", sonatas.first().id)
+        assertEquals(0, sonatas.first().pieceId)
     }
 
     @Test
@@ -72,11 +73,11 @@ class MusicLibraryTest {
         val library = MusicLibrary()
         val beethoven = Composer("Beethoven", 1770, 1827, "German")
 
-        val piece1 = Piece("Op. 2", "Piano Sonata no. 1", beethoven, "Piano")
-        val piece2 = Piece("Op. 3", "String Trio", beethoven, "Strings")
+        val piece1 = Piece(0, "Op. 2", "Piano Sonata no. 1", beethoven, "Piano")
+        val piece2 = Piece(1, "Op. 3", "String Trio", beethoven, "Strings")
 
-        val item1 = PhysicalItem("ITEM-1", pieceId = "Op. 2", format = "book")
-        val item2 = PhysicalItem("ITEM-2", pieceId = "Op. 3", format = "book")
+        val item1 = PhysicalItem(0, pieceId = 0, format = "book")
+        val item2 = PhysicalItem(1, pieceId = 1, format = "book")
 
         library.addComposer(beethoven)
         library.addPiece(piece1)
@@ -86,14 +87,8 @@ class MusicLibraryTest {
 
         val removed = library.removeComposer("Beethoven")
         assertEquals(true, removed)
-
-        // Komponisten borte
         assertEquals(0, library.composers.size)
-
-        // Alle stykker av Beethoven borte
         assertEquals(0, library.pieces.size)
-
-        // Alle items for disse stykkene borte
         assertEquals(0, library.items.size)
     }
 
@@ -102,26 +97,21 @@ class MusicLibraryTest {
         val library = MusicLibrary()
         val beethoven = Composer("Beethoven", 1770, 1827, "German")
 
-        val piece = Piece("Op. 2", "Piano Sonata no. 1", beethoven, "Piano")
-        val item1 = PhysicalItem("ITEM-1", pieceId = "Op. 2", format = "book")
-        val item2 = PhysicalItem("ITEM-2", pieceId = "Op. 2", format = "book")
+        val piece = Piece(0, "Op. 2", "Piano Sonata no. 1", beethoven, "Piano")
+        val item1 = PhysicalItem(0, pieceId = 0, format = "book")
+        val item2 = PhysicalItem(0, pieceId = 0, format = "book")
 
         library.addComposer(beethoven)
         library.addPiece(piece)
         library.addPhysicalItem(item1)
         library.addPhysicalItem(item2)
 
-        val removed = library.removePiece("Op. 2")
-        assertEquals(true, removed)
+        val removed = library.removePiece(0)
 
-        // Komponisten skal fortsatt finnes
+        assertEquals(true, removed)
         assertEquals(1, library.composers.size)
         assertEquals("Beethoven", library.composers["Beethoven"]?.name)
-
-        // Stykket er fjernet
         assertEquals(0, library.pieces.size)
-
-        // Alle items for dette stykket er fjernet
         assertEquals(0, library.items.size)
     }
 
@@ -129,14 +119,14 @@ class MusicLibraryTest {
     fun removeItemOnlyRemovesTheItem() {
         val library = MusicLibrary()
         val beethoven = Composer("Beethoven", 1770, 1827, "German")
-        val piece = Piece("Op. 2", "Piano Sonata no. 1", beethoven, "Piano")
-        val item = PhysicalItem("ITEM-1", pieceId = "Op. 2", format = "book")
+        val piece = Piece(0, "Op. 2", "Piano Sonata no. 1", beethoven, "Piano")
+        val item = PhysicalItem(0, pieceId = 0, format = "book")
 
         library.addComposer(beethoven)
         library.addPiece(piece)
         library.addPhysicalItem(item)
 
-        val removed = library.removeItem("ITEM-1")
+        val removed = library.removeItem(0)
         assertEquals(true, removed)
 
         // Item borte

@@ -46,6 +46,8 @@ class MusicLibrary {
     fun findPiecesByTitle(title: String): List<Piece> =
         pieces.values.filter { it.title.contains(title, ignoreCase = true) }
 
+    fun findPieceById(id: Int): Piece? = pieces[id]
+
     // removing
     fun removeComposer(name: String): Boolean {
         val composer = composers[name] ?: return false
